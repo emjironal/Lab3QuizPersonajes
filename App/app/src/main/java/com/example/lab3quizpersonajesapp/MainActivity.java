@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity
         catch (InterruptedException e)
         {
             Log.e("Error", e.getMessage());
-        }*/
-        resultado = HTML.html;
+        }
+        */resultado = HTML.html;
         if(!resultado.equals("Error"))
         {
             parseHtml(resultado);

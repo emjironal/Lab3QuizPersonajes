@@ -14,7 +14,7 @@ public class DownloadTask extends AsyncTask<String, Void, String>
     protected String doInBackground(String... urls)
     {
 
-        String result = "";
+        StringBuilder result = new StringBuilder();
         URL url;
 
         // Agregar permiso en AndroidManifest.xml
@@ -38,13 +38,13 @@ public class DownloadTask extends AsyncTask<String, Void, String>
             Log.e("Error", "Empieza a recorrer caracter por carater");
             while (data != -1){
                 char character = (char)data;
-                result += character;
+                result.append(character);
                 data = inputStreamReader.read();
-                Log.e("Error", result);
+                //Log.e("Error", result.toString());
             }
             Log.e("Error", "Termina de leer el html y devuelve");
 
-            return result;
+            return result.toString();
         }
         catch (Exception e)
         {
