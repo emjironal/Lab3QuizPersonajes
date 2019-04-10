@@ -1,5 +1,9 @@
 package com.example.lab3quizpersonajesapp;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,6 +36,8 @@ public class MainActivity extends AppCompatActivity
     private int currentPersonaje;
     private int currentPersonajePos;
     private ArrayList<Integer> ordenPersonajes = new ArrayList<>();
+    Integer correctas = 0;
+    Integer incorrectas = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -59,6 +65,7 @@ public class MainActivity extends AppCompatActivity
         {
             parseHtml(resultado);
         }
+        setOrdenPersonajes();
         setPersonaje();
         ListView listViewPersonajes = findViewById(R.id.listViewOptions);
         listViewPersonajes.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -68,10 +75,12 @@ public class MainActivity extends AppCompatActivity
             {
                 if(position == currentPersonajePos)
                 {
+                    correctas++;
                     Toast.makeText(getApplicationContext(), "Respuesta correcta", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
+                    incorrectas++;
                     Toast.makeText(getApplicationContext(), "Respuesta incorrecta", Toast.LENGTH_SHORT).show();
                 }
                 setPersonaje();
@@ -114,27 +123,66 @@ public class MainActivity extends AppCompatActivity
         return new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, array);
     }
 
+    Boolean terminar = false;
+    private ArrayList<String> gameOver()
+    {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                terminar = false;
+            }
+        });
+        dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                terminar = true;
+                finish();
+            }
+        });
+        dialog.setMessage("El quiz terminó\n" +
+                "Correctas: " + correctas.toString() + "\n" +
+                "Incorrectas: " + incorrectas.toString() + "\n" +
+                "¿Jugar de nuevo?");
+        dialog.show();
+        if(terminar)
+        {
+            finish();
+            return null;
+        }
+        else
+        {
+            setOrdenPersonajes();
+            correctas = 0;
+            incorrectas = 0;
+            return getListaPersonajesPregunta();
+        }
+    }
+
     private ArrayList<String> getListaPersonajesPregunta()
     {
         Random random = new Random();
         if(ordenPersonajes.isEmpty())
         {
-            setOrdenPersonajes();
+            return gameOver();
         }
-        currentPersonaje = ordenPersonajes.get(0);
-        ordenPersonajes.remove(0);
-        int idTrampa1, idTrampa2, idTrampa3;
-        do {idTrampa1 = random.nextInt(50);} while(idTrampa1 == currentPersonaje);
-        do {idTrampa2 = random.nextInt(50);} while(idTrampa2 == currentPersonaje || idTrampa2 == idTrampa1);
-        do {idTrampa3 = random.nextInt(50);} while(idTrampa3 == currentPersonaje || idTrampa3 == idTrampa1 || idTrampa3 == idTrampa2);
-        ArrayList<String> personajes = new ArrayList<>();
-        personajes.add(getNombrePersonaje(currentPersonaje));
-        personajes.add(getNombrePersonaje(idTrampa1));
-        personajes.add(getNombrePersonaje(idTrampa2));
-        personajes.add(getNombrePersonaje(idTrampa3));
-        shuffle(personajes);
-        currentPersonajePos = personajes.indexOf(getNombrePersonaje(currentPersonaje));
-        return personajes;
+        else
+        {
+            currentPersonaje = ordenPersonajes.get(0);
+            ordenPersonajes.remove(0);
+            int idTrampa1, idTrampa2, idTrampa3;
+            do {idTrampa1 = random.nextInt(50);} while(idTrampa1 == currentPersonaje);
+            do {idTrampa2 = random.nextInt(50);} while(idTrampa2 == currentPersonaje || idTrampa2 == idTrampa1);
+            do {idTrampa3 = random.nextInt(50);} while(idTrampa3 == currentPersonaje || idTrampa3 == idTrampa1 || idTrampa3 == idTrampa2);
+            ArrayList<String> personajes = new ArrayList<>();
+            personajes.add(getNombrePersonaje(currentPersonaje));
+            personajes.add(getNombrePersonaje(idTrampa1));
+            personajes.add(getNombrePersonaje(idTrampa2));
+            personajes.add(getNombrePersonaje(idTrampa3));
+            shuffle(personajes);
+            currentPersonajePos = personajes.indexOf(getNombrePersonaje(currentPersonaje));
+            return personajes;
+        }
     }
 
     private void parseHtml(String html)
