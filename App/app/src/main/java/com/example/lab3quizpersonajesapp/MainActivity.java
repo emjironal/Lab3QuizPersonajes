@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity
         //Descargo la página
         DownloadTask downloadTask = new DownloadTask();
         String resultado = "";
-        /*try
+        try
         {
             resultado = downloadTask.execute(paginaTop50PersonajesAnime).get();
         }
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
         {
             Log.e("Error", e.getMessage());
         }
-        */resultado = HTML.html;
+        //resultado = HTML.html;
         if(!resultado.equals("Error"))
         {
             parseHtml(resultado);
